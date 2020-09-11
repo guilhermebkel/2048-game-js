@@ -53,11 +53,11 @@
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
@@ -114,9 +114,35 @@
 				}
 			}
 
-			window.addEventListener("keydown", function(event) {
+			window.addEventListener("keydown", async function(event) {
 				// ArrowRight, ArrowUp, ArrowLeft, ArrowDown
 				const keyPressed = event.key
+
+				if (keyPressed === "ArrowRight") {
+					for (let targetColumn = MAX_AMOUNT - 1; targetColumn >= 0; targetColumn--) {
+						for (let columnToCompare = MAX_AMOUNT - 1; columnToCompare >= 0; columnToCompare--) {
+
+							if (targetColumn === columnToCompare) {
+								break
+							}
+
+							await new Promise(resolve => setTimeout(resolve, 55))
+
+							if (table[1][targetColumn].innerText && !table[1][columnToCompare].innerText) {
+								table[1][columnToCompare].innerText = table[1][targetColumn].innerText
+
+								table[1][targetColumn].innerText = ""
+							}
+
+							console.log(columnToCompare, targetColumn, table[1][targetColumn].innerText, table[1][columnToCompare].innerText)
+							if ((columnToCompare <= targetColumn) && (table[1][targetColumn].innerText === table[1][columnToCompare].innerText)) {
+								table[1][targetColumn].innerText = table[1][targetColumn].innerText + table[1][columnToCompare].innerText
+
+								break
+							}
+						}
+					}
+				}
 			})
 		</script>
 	</body>
