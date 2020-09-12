@@ -120,25 +120,36 @@
 
 				if (keyPressed === "ArrowRight") {
 					for (let targetColumn = MAX_AMOUNT - 1; targetColumn >= 0; targetColumn--) {
+						const initialTargetSquareElement = table[1][targetColumn]
+
+						let currentTargetSquarePosition = targetColumn
+
 						for (let columnToCompare = MAX_AMOUNT - 1; columnToCompare >= 0; columnToCompare--) {
+							const squareToCompareElement = table[1][columnToCompare]
+							const currentTargetSquareElement = table[1][currentTargetSquarePosition]
 
 							if (targetColumn === columnToCompare) {
+								continue
+							}
+
+							const isTargetSquareElementMovable = initialTargetSquareElement.innerText && !squareToCompareElement.innerText
+							const areSquareValuesEqual = currentTargetSquareElement.innerText === squareToCompareElement.innerText
+							const areSquareValuesValid = currentTargetSquareElement.innerText && squareToCompareElement.innerText
+
+							if ((columnToCompare <= targetColumn) && areSquareValuesEqual && areSquareValuesValid) {
+								currentTargetSquareElement.innerText = Number(currentTargetSquareElement.innerText) + Number(squareToCompareElement.innerText)
+
+								squareToCompareElement.innerText = ""
+
 								break
 							}
 
-							await new Promise(resolve => setTimeout(resolve, 55))
+							if ((columnToCompare >= targetColumn) && isTargetSquareElementMovable) {
+								squareToCompareElement.innerText = initialTargetSquareElement.innerText
 
-							if (table[1][targetColumn].innerText && !table[1][columnToCompare].innerText) {
-								table[1][columnToCompare].innerText = table[1][targetColumn].innerText
+								currentTargetSquarePosition = columnToCompare
 
-								table[1][targetColumn].innerText = ""
-							}
-
-							console.log(columnToCompare, targetColumn, table[1][targetColumn].innerText, table[1][columnToCompare].innerText)
-							if ((columnToCompare <= targetColumn) && (table[1][targetColumn].innerText === table[1][columnToCompare].innerText)) {
-								table[1][targetColumn].innerText = table[1][targetColumn].innerText + table[1][columnToCompare].innerText
-
-								break
+								initialTargetSquareElement.innerText = ""
 							}
 						}
 					}
