@@ -33,19 +33,15 @@
 	<body>
 		<div class="board">
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
-			</div>
-
-			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
@@ -61,39 +57,43 @@
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
-
+				2
 			</div>
 
 			<div class="square">
+				2
+			</div>
 
+			<div class="square">
+				2
 			</div>
 		</div>
 
@@ -114,19 +114,23 @@
 				}
 			}
 
-			window.addEventListener("keydown", async function(event) {
-				// ArrowRight, ArrowUp, ArrowLeft, ArrowDown
-				const keyPressed = event.key
-
-				if (keyPressed === "ArrowRight") {
-					for (let targetColumn = MAX_AMOUNT - 1; targetColumn >= 0; targetColumn--) {
-						const initialTargetSquareElement = table[1][targetColumn]
+			async function moveSquares({
+				iterateFrom,
+				iterateTo,
+				iterateBy,
+				compareLower,
+				compareHigher,
+				buildMatrixPath
+			}) {
+				for (let row = 0; row < MAX_AMOUNT; row++) {
+					for (let targetColumn = iterateFrom; targetColumn !== iterateTo + iterateBy; targetColumn += iterateBy) {
+						const initialTargetSquareElement = buildMatrixPath(table, row, targetColumn)
 
 						let currentTargetSquarePosition = targetColumn
 
-						for (let columnToCompare = MAX_AMOUNT - 1; columnToCompare >= 0; columnToCompare--) {
-							const squareToCompareElement = table[1][columnToCompare]
-							const currentTargetSquareElement = table[1][currentTargetSquarePosition]
+						for (let columnToCompare = iterateFrom; columnToCompare !== iterateTo + iterateBy; columnToCompare += iterateBy) {
+							const squareToCompareElement = buildMatrixPath(table, row, columnToCompare)
+							const currentTargetSquareElement = buildMatrixPath(table, row, currentTargetSquarePosition)
 
 							if (targetColumn === columnToCompare) {
 								continue
@@ -135,16 +139,28 @@
 							const isTargetSquareElementMovable = initialTargetSquareElement.innerText && !squareToCompareElement.innerText
 							const areSquareValuesEqual = currentTargetSquareElement.innerText === squareToCompareElement.innerText
 							const areSquareValuesValid = currentTargetSquareElement.innerText && squareToCompareElement.innerText
+							const isTargetColumnBeingComparedWithLowerColumn = compareLower(columnToCompare, targetColumn)
+							const isTargetColumnBeingComparedWithHigherColumn = compareHigher(columnToCompare, targetColumn)
 
-							if ((columnToCompare <= targetColumn) && areSquareValuesEqual && areSquareValuesValid) {
-								currentTargetSquareElement.innerText = Number(currentTargetSquareElement.innerText) + Number(squareToCompareElement.innerText)
+							/**
+							 * Sum equal elements
+							 */
+							if (isTargetColumnBeingComparedWithLowerColumn && areSquareValuesValid) {
+								if (areSquareValuesEqual) {
+									currentTargetSquareElement.innerText = Number(currentTargetSquareElement.innerText) + Number(squareToCompareElement.innerText)
 
-								squareToCompareElement.innerText = ""
+									squareToCompareElement.innerText = ""
 
-								break
+									break
+								} else {
+									break
+								}
 							}
 
-							if ((columnToCompare >= targetColumn) && isTargetSquareElementMovable) {
+							/**
+							 * Move elements to blank spaces
+							 */
+							if (isTargetColumnBeingComparedWithHigherColumn && isTargetSquareElementMovable) {
 								squareToCompareElement.innerText = initialTargetSquareElement.innerText
 
 								currentTargetSquarePosition = columnToCompare
@@ -153,6 +169,49 @@
 							}
 						}
 					}
+				}
+			}
+
+			window.addEventListener("keydown", async function(event) {
+				// ArrowRight, ArrowUp, ArrowLeft, ArrowDown
+				const keyPressed = event.key
+
+				if (keyPressed === "ArrowRight") {
+					moveSquares({
+						iterateFrom: MAX_AMOUNT - 1,
+						iterateTo: 0,
+						iterateBy: -1,
+						compareHigher: (valueToCompare, targetValue) => valueToCompare >= targetValue,
+						compareLower: (valueToCompare, targetValue) => valueToCompare <= targetValue,
+						buildMatrixPath: (table, row, column) => table[row][column]
+					})
+				} else if (keyPressed === "ArrowDown") {
+					moveSquares({
+						iterateFrom: MAX_AMOUNT - 1,
+						iterateTo: 0,
+						iterateBy: -1,
+						compareHigher: (valueToCompare, targetValue) => valueToCompare >= targetValue,
+						compareLower: (valueToCompare, targetValue) => valueToCompare <= targetValue,
+						buildMatrixPath: (table, row, column) => table[column][row]
+					})
+				} else if (keyPressed === "ArrowLeft") {
+					moveSquares({
+						iterateFrom: 0,
+						iterateTo: MAX_AMOUNT - 1,
+						iterateBy: +1,
+						compareHigher: (valueToCompare, targetValue) => valueToCompare <= targetValue,
+						compareLower: (valueToCompare, targetValue) => valueToCompare >= targetValue,
+						buildMatrixPath: (table, row, column) => table[row][column]
+					})
+				} else if (keyPressed === "ArrowUp") {
+					moveSquares({
+						iterateFrom: 0,
+						iterateTo: MAX_AMOUNT - 1,
+						iterateBy: +1,
+						compareHigher: (valueToCompare, targetValue) => valueToCompare <= targetValue,
+						compareLower: (valueToCompare, targetValue) => valueToCompare >= targetValue,
+						buildMatrixPath: (table, row, column) => table[column][row]
+					})
 				}
 			})
 		</script>
