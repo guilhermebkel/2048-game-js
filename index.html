@@ -131,8 +131,6 @@
 						await new Promise(resolve => setTimeout(resolve, 1))
 
 						for (let columnToCompare = iterateFrom; columnToCompare !== iterateTo + iterateBy; columnToCompare += iterateBy) {
-							
-
 							const squareToCompareElement = buildMatrixPath(table, row, columnToCompare)
 							const currentTargetSquareElement = buildMatrixPath(table, row, currentTargetSquarePosition)
 
