@@ -33,67 +33,67 @@
 	<body>
 		<div class="board">
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 
 			<div class="square">
-				2
+
 			</div>
 		</div>
 
@@ -128,7 +128,11 @@
 
 						let currentTargetSquarePosition = targetColumn
 
+						await new Promise(resolve => setTimeout(resolve, 1))
+
 						for (let columnToCompare = iterateFrom; columnToCompare !== iterateTo + iterateBy; columnToCompare += iterateBy) {
+							
+
 							const squareToCompareElement = buildMatrixPath(table, row, columnToCompare)
 							const currentTargetSquareElement = buildMatrixPath(table, row, currentTargetSquarePosition)
 
@@ -172,12 +176,65 @@
 				}
 			}
 
+			function drawRandomBlankPosition(squareElements) {
+				const blankPositions = []
+
+				for (const index in squareElements) {
+					const element = squareElements[index]
+
+					const isValidIndex = !isNaN(+index)
+
+					if (!element.innerText && isValidIndex) {
+						blankPositions.push(+index)
+					}
+				}
+
+				const randomIndex = Math.floor(Math.random() * Math.floor(blankPositions.length))
+
+				const randomBlankPosition = blankPositions[randomIndex]
+
+				return randomBlankPosition
+			}
+
+			function drawFourOrTwo() {
+				const MAX_NUMBERS = 50
+
+				const randomNumbers = []
+
+				for (let index = 0; index < MAX_NUMBERS; index++) {
+					randomNumbers.push(index)
+				}
+
+				const randomNumber = Math.floor(Math.random() * Math.floor(MAX_NUMBERS))
+
+				if (randomNumber < MAX_NUMBERS * 0.95) {
+					return 2
+				} else {
+					return 4
+				}
+			}
+
+			function generateFourOrTwoInRandomPosition(squareElements) {
+				const randomBlankPosition = drawRandomBlankPosition(squareElements)
+
+				const randomNumber = drawFourOrTwo()
+
+				squareElements[randomBlankPosition].innerText = randomNumber
+			}
+
+			generateFourOrTwoInRandomPosition(squareElements)
+
 			window.addEventListener("keydown", async function(event) {
-				// ArrowRight, ArrowUp, ArrowLeft, ArrowDown
 				const keyPressed = event.key
 
+				const validKeys = ["ArrowRight", "ArrowUp", "ArrowLeft", "ArrowDown"]
+
+				if (!validKeys.includes(keyPressed)) {
+					return
+				}
+
 				if (keyPressed === "ArrowRight") {
-					moveSquares({
+					await moveSquares({
 						iterateFrom: MAX_AMOUNT - 1,
 						iterateTo: 0,
 						iterateBy: -1,
@@ -186,7 +243,7 @@
 						buildMatrixPath: (table, row, column) => table[row][column]
 					})
 				} else if (keyPressed === "ArrowDown") {
-					moveSquares({
+					await moveSquares({
 						iterateFrom: MAX_AMOUNT - 1,
 						iterateTo: 0,
 						iterateBy: -1,
@@ -195,7 +252,7 @@
 						buildMatrixPath: (table, row, column) => table[column][row]
 					})
 				} else if (keyPressed === "ArrowLeft") {
-					moveSquares({
+					await moveSquares({
 						iterateFrom: 0,
 						iterateTo: MAX_AMOUNT - 1,
 						iterateBy: +1,
@@ -204,7 +261,7 @@
 						buildMatrixPath: (table, row, column) => table[row][column]
 					})
 				} else if (keyPressed === "ArrowUp") {
-					moveSquares({
+					await moveSquares({
 						iterateFrom: 0,
 						iterateTo: MAX_AMOUNT - 1,
 						iterateBy: +1,
@@ -213,6 +270,8 @@
 						buildMatrixPath: (table, row, column) => table[column][row]
 					})
 				}
+
+				generateFourOrTwoInRandomPosition(squareElements)
 			})
 		</script>
 	</body>
